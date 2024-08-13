@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battery</title>
+    <style>
+        *{
+            padding:0;
+            margin: 0;
+        }
+        .view{
+            /* width: 100vh;*/
+            height: 100vh;
+            padding:0;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .bat_out{
+            border:3px solid blue;
+            width: 220px;
+            height: 70px;
+            padding: 10px;
+            position: relative;
+            border-radius: 10px;
+        }
+        .bat_out::after{
+            content:"";
+            width: 10px;
+            height: 50px;
+            position: absolute;
+            top: 20px;
+            left: 240px;
+            background-color: blue;
+            border-radius: 10px;
+        }
+        .charge{
+            width:220px;
+            height: 70px;
+            background-color:blue;
+            position: absolute;
+            /* display: grid;
+            place-items: center; */
+        }
+        .level{
+            font-size: 22px;
+            font-family: monospace;
+            font-weight: 300;
+            position: absolute;
+            left: 90px;
+            top: 22px;
+        }
+
+        .time{
+            position: absolute;
+            font-size: 22px;
+            font-family: monospace;
+            font-weight: 300;
+            top: 420px;
+        }
+
+        .animate{
+            animation: charge 3s infinite linear;
+        }
+        @keyframes charge {
+            0%{
+                width:0;
+            }
+            100%{
+                width: 220px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <section class="view">
+        <div class="bat_out">
+            <div class="charge ">
+                <p class="level"></p>
+            </div>
+        </div>
+        <p class="time"></p>
+    </section>
+
+    <section class="view">
+        <div class="bat_out" style="transform: rotate(270deg);">
+            <div class="charge">
+                <p class="level" style="transform: rotate(90deg);"></p>
+            </div>
+        </div>
+        <p class="time" style="top:520px"></p>
+    </section>
+
+    <script>
+        startBattery();
+        function startBattery(){
+            const battery_level = document.querySelectorAll(".level");
+            const battery = document.querySelectorAll(".charge");
+            const charge_time = document.querySelectorAll(".time");
+            navigator.getBattery().then(function (batt){
+                var level = parseInt(batt.level * 100);
+
+                if(!batt.charging){
+                    var hr = parseInt(batt.dischargingTime/3600);
+                    var min = parseInt((batt.dischargingTime/60) - (hr*60));
+                }
+                else{
+                    var hr = parseInt(batt.chargingTime/3600);
+                    var min = parseInt((batt.chargingTime/60) - (hr*60));
+                    battery.setAttribute("class", "charge animate");
+                }
+                for(let i=0;i<battery.length;i++){
+                    battery_level[i].innerText = level+ '%';
+                    battery[i].style.width = (level*2)+"px";
+                    charge_time[i].innerText = `${hr}hr ${min}min remaining`;
+                }
+
+            });
+        }
+    </script>
+</body>
+</html>
